@@ -15,4 +15,5 @@ urlpatterns = [
     path('comment/<int:pk>/detail/', views.CommentDetailMixinView.as_view(), name='comment-detail'),
 
     path('register/', views.RegisterView.as_view(), name='register'),
+    path('logout/', views.LogoutView.as_view(), name='logout')
 ]
