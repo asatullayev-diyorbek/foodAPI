@@ -1,15 +1,17 @@
-from rest_framework.generics import CreateAPIView, ListCreateAPIView, RetrieveUpdateDestroyAPIView
+from rest_framework.generics import CreateAPIView
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
-
-from .models import Type, Food, Comment, User
+from rest_framework.viewsets import ModelViewSet
+from .models import Type, Food, Comment, User, Favorite
 from .serializers import TypeSerializer, FoodSerializer,\
-                        CommentSerializer, RegisterSerializer
+                        CommentSerializer, RegisterSerializer, \
+                        FavoriteSerializer
 from django.db.models import Q
 
 
-class TypeListGenericView(ListCreateAPIView):
+class TypeListGenericView(ModelViewSet):
+    queryset = Type.objects.all()
     serializer_class = TypeSerializer
 
     def get_queryset(self, *args, **kwargs):
@@ -23,7 +25,7 @@ class TypeListGenericView(ListCreateAPIView):
             pass
 
         try:
-            # ?o=-pk teskari tartibda, ?o=pk to'g'ri tartibda
+            # ?o=-created_at teskari tartibda, ?o=created_at to'g'ri tartibda
             if self.request.query_params.get('o', False):
                 types = types.order_by(self.request.query_params.get('o'))
         except:
@@ -32,13 +34,7 @@ class TypeListGenericView(ListCreateAPIView):
         return types
 
 
-class TypeDetailGenericView(RetrieveUpdateDestroyAPIView):
-    queryset = Type.objects.all()
-    serializer_class = TypeSerializer
-
-
-
-class FoodListGenericView(ListCreateAPIView):
+class FoodListGenericView(ModelViewSet):
     queryset = Food.objects.all()
     serializer_class = FoodSerializer
 
@@ -68,12 +64,7 @@ class FoodListGenericView(ListCreateAPIView):
         return foods
 
 
-class FoodDetailGenericView(RetrieveUpdateDestroyAPIView):
-    queryset = Food.objects.all()
-    serializer_class = FoodSerializer
-
-
-class CommentListMixinView(ListCreateAPIView):
+class CommentListMixinView(ModelViewSet):
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
 
@@ -109,9 +100,33 @@ class CommentListMixinView(ListCreateAPIView):
         return comment
 
 
-class CommentDetailMixinView(RetrieveUpdateDestroyAPIView):
-    queryset = Comment.objects.all()
-    serializer_class = CommentSerializer
+class FavoriteListMixinView(ModelViewSet):
+    queryset = Favorite.objects.all()
+    serializer_class = FavoriteSerializer
+
+    def get_queryset(self, *args, **kwargs):
+        favorites = Favorite.objects.all()
+
+        try:
+            if self.request.query_params.get('user_id', False):
+                favorites = favorites.filter(user_id=self.request.query_params.get('user_id'))
+        except:
+            pass
+
+        try:
+            if self.request.query_params.get('food_id', False):
+                favorites = favorites.filter(food_id=self.request.query_params.get('food_id'))
+        except:
+            pass
+
+        try:
+            # ?o=-created_at teskari tartibda, ?o=created_at to'g'ri tartibda
+            if self.request.query_params.get('o', False):
+                favorites = favorites.order_by(self.request.query_params.get('o'))
+        except:
+            pass
+
+        return favorites
 
 
 class RegisterView(CreateAPIView):
@@ -130,4 +145,3 @@ class LogoutView(APIView):
             return Response({'message': "You are logout our site"}, status=205)
         except Exception as e:
             return Response({'message': str(e)}, status=400)
-

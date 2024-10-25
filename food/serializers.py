@@ -1,6 +1,6 @@
 from django.contrib.auth.password_validation import validate_password
 from rest_framework import serializers
-from .models import Type, Comment, Food
+from .models import Type, Comment, Food, Favorite
 from django.contrib.auth.models import User
 
 
@@ -32,6 +32,18 @@ class CommentSerializer(serializers.ModelSerializer):
         model = Comment
         fields = '__all__'
 
+
+class FavoriteSerializer(serializers.ModelSerializer):
+    user = serializers.PrimaryKeyRelatedField(
+        queryset=User.objects.all()
+    )
+    food = serializers.PrimaryKeyRelatedField(
+        queryset=Food.objects.all()
+    )
+
+    class Meta:
+        model = Favorite
+        fields = '__all__'
 
 
 class RegisterSerializer(serializers.ModelSerializer):

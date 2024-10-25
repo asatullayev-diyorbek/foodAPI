@@ -42,3 +42,18 @@ class Comment(models.Model):
     class Meta:
         verbose_name = "Izoh"
         verbose_name_plural = "Izohlar"
+
+
+class Favorite(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    food = models.ForeignKey(Food, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.user.username}'s favorite - {self.food.title}"
+
+    class Meta:
+        verbose_name = "Sevimli"
+        verbose_name_plural = "Sevimlilar"
+        unique_together = ('user', 'food')
+
