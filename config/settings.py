@@ -124,11 +124,15 @@ REST_FRAMEWORK = {
     ],
     'DEFAULT_THROTTLE_RATES': {
         'anon': '10/minute',
-        'user': '10/minute',
-        'type': '3/minute',
-    }
-}
+        'user': '100/minute',
+        'type': '30/minute',
+    },
+    # 'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    'DEFAULT_PAGINATION_CLASS': 'food.pagination.MyPagination',
+    'PAGE_SIZE': 5,
 
+    # 'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend']
+}
 
 APPEND_SLASH = True
 
